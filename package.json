@@ -10,6 +10,7 @@
     "prod": "NODE_ENV=production node server-v2.js"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "archiver": "^7.0.1",
     "axios": "^1.15.2",
     "body-parser": "^1.20.2",
