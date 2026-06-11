@@ -1,0 +1,25 @@
+{
+  "jurisdictions": {
+    "AR": {
+      "minAge": 18,
+      "maxDepositDaily": 10000,
+      "allowed": true
+    },
+    "ES": {
+      "minAge": 18,
+      "maxDepositDaily": 600,
+      "allowed": true
+    },
+    "US": {
+      "minAge": 21,
+      "maxDepositDaily": 5000,
+      "allowed": false,
+      "reason": "Legal restrictions apply"
+    }
+  },
+  "default": {
+    "minAge": 18,
+    "maxDepositDaily": 1000,
+    "allowed": true
+  }
+}
