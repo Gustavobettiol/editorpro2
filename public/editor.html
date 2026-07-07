@@ -241,6 +241,28 @@
       opacity: 0.9;
     }
 
+    .chat-toolbar {
+      padding: 4px 8px;
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-btn {
+      flex: 1;
+      padding: 4px;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 10px;
+    }
+
+    .chat-btn:hover {
+      background: var(--border);
+    }
+
     /* Editor Area (Center) */
     .editor-area {
       grid-column: 2;
@@ -891,6 +913,11 @@
         </div>
       </div>
 
+      <div class="chat-toolbar">
+        <button id="clearChatBtn" class="chat-btn" onclick="clearChatHistory()">🗑️ Limpiar Chat</button>
+        <button id="exportChatBtn" class="chat-btn" onclick="exportChatHistory()">📥 Exportar</button>
+      </div>
+
       <div class="chat-messages" id="chatMessages"></div>
       
       <div class="chat-input-area">
@@ -927,6 +954,12 @@
               <div class="bottom-tab" data-panel="debug" onclick="switchPanel('debug')">
                 🐛 Debug
               </div>
+              <div class="bottom-tab" data-panel="deploy" onclick="switchPanel('deploy')">
+                🚀 Despliegue
+              </div>
+              <div class="bottom-tab" data-panel="video" onclick="switchPanel('video')">
+                🎬 Nocturnal Player
+              </div>
             </div>
 
             <div id="terminal" class="panel-content active">
@@ -947,6 +980,24 @@
 
             <div id="debug" class="panel-content">
               <p style="color: var(--text-muted); font-size: 12px;">Depurador listo</p>
+            </div>
+
+            <div id="deploy" class="panel-content">
+              <div id="deployGuideContent" style="font-size: 13px; line-height: 1.6; color: var(--text-main); overflow-y: auto; max-height: 100%;">
+                <p>Cargando guía de despliegue...</p>
+              </div>
+            </div>
+
+            <div id="video" class="panel-content">
+              <div class="video-player-container" style="display: flex; flex-direction: column; gap: 10px; height: 100%;">
+                <div class="video-controls" style="display: flex; gap: 8px;">
+                  <input type="text" id="videoUrlInput" placeholder="Pega el link de video o stream (m3u8, mp4, etc)..." style="flex: 1; padding: 6px; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); border-radius: 3px;">
+                  <button onclick="loadVideo()" class="terminal-exec-btn">Cargar</button>
+                </div>
+                <div id="videoDisplay" style="flex: 1; background: #000; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                  <p id="videoPlaceholder" style="color: #444;">No hay video cargado</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -979,6 +1030,9 @@
       </div>
       <div class="statusbar-item" id="languageIndicator">
         JavaScript
+      </div>
+      <div class="statusbar-item" style="margin-left: auto;">
+        <span id="sessionInfo">Sesión: ...</span>
       </div>
     </div>
   </div>
