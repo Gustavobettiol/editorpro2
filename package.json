@@ -1,27 +1,20 @@
 {
-  "name": "editor-pro2",
+  "name": "gusty-video-chat",
   "version": "1.0.0",
+  "description": "Chat de texto y video anónimo con salas temáticas y reproductor general.",
   "main": "server.js",
   "scripts": {
-    "start": "node server-v2.js",
-    "start:old": "node server.js",
-    "dev": "node server-v2.js",
-    "dev:watch": "nodemon server-v2.js --watch . --ignore node_modules --ignore .editor-data",
-    "prod": "NODE_ENV=production node server-v2.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "archiver": "^7.0.1",
-    "axios": "^1.15.2",
-    "body-parser": "^1.20.2",
-    "canvas": "^2.11.2",
-    "cors": "^2.8.6",
-    "dotenv": "^16.6.1",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "node-fetch": "^2.7.0",
-    "sharp": "^0.32.6"
+    "simple-peer": "^9.11.1",
+    "socket.io": "^4.7.2"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.1"
   },
   "engines": {
     "node": ">=18.0.0"
