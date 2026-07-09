@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUSTY - Premium Anonymous Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <h1 class="logo">GUSTY<span>.</span></h1>
+            <p>Acceso Anónimo Premium</p>
+            <input type="text" id="username-input" placeholder="Tu alias..." maxlength="15">
+            <select id="room-select">
+                <option value="General">General</option>
+                <option value="Posadas">Posadas</option>
+                <option value="Misiones">Misiones</option>
+                <option value="Random">Random</option>
+                <option value="VIP">VIP</option>
+            </select>
+            <button id="btn-enter">ENTRAR</button>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app-container" class="hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo-small">GUSTY<span>.</span></h2>
+            </div>
+            <div class="rooms-list">
+                <h3>SALAS</h3>
+                <div class="room-item active" data-room="General">General</div>
+                <div class="room-item" data-room="Posadas">Posadas</div>
+                <div class="room-item" data-room="Misiones">Misiones</div>
+                <div class="room-item" data-room="Random">Random</div>
+                <div class="room-item" data-room="VIP">VIP</div>
+            </div>
+            <div class="player-container">
+                <h3>RADIO / MÚSICA</h3>
+                <div id="media-player">
+                    <audio id="audio-player" controls>
+                        <source src="https://stream.zeno.fm/f3768021szhvv" type="audio/mpeg">
+                        Tu navegador no soporta el reproductor.
+                    </audio>
+                    <div class="player-info">
+                        <marquee behavior="scroll" direction="left">Reproduciendo Mix Misiones...</marquee>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Video Area -->
+            <section class="video-grid" id="video-grid">
+                <div class="video-wrapper local">
+                    <video id="local-video" autoplay playsinline muted></video>
+                    <div class="video-label">Tú</div>
+                    <div class="video-controls">
+                        <button id="btn-toggle-cam" title="Cámara"><i class="fas fa-video"></i></button>
+                        <button id="btn-toggle-mic" title="Micrófono"><i class="fas fa-microphone"></i></button>
+                    </div>
+                </div>
+                <!-- Remote videos will be injected here -->
+            </section>
+
+            <!-- Chat Area -->
+            <section class="chat-area">
+                <div id="chat-messages" class="chat-messages">
+                    <div class="system-msg">Bienvenido a la sala <span id="current-room-name">General</span></div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chat-input" placeholder="Escribe un mensaje provocativo...">
+                    <button id="btn-send"><i class="fas fa-paper-plane"></i> ENVIAR</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/simple-peer@9.11.1/simplepeer.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

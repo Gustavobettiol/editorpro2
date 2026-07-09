@@ -1,0 +1,356 @@
+:root {
+    --bg-dark: #0a0a0a;
+    --bg-card: #141414;
+    --gold: #d4af37;
+    --gold-hover: #f1c40f;
+    --red: #8b0000;
+    --red-light: #c0392b;
+    --text-main: #e0e0e0;
+    --text-muted: #888;
+    --sidebar-width: 280px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Login Overlay */
+#login-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.login-box {
+    background: var(--bg-card);
+    padding: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--gold);
+    text-align: center;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+    width: 350px;
+}
+
+.logo {
+    font-size: 3rem;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 2px;
+}
+
+.logo span {
+    color: var(--gold);
+}
+
+.logo-small {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.logo-small span {
+    color: var(--gold);
+}
+
+.login-box p {
+    color: var(--text-muted);
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.login-box input, .login-box select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    background: #000;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 4px;
+    outline: none;
+}
+
+.login-box input:focus {
+    border-color: var(--gold);
+}
+
+.login-box button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to right, var(--gold), #b8860b);
+    border: none;
+    color: black;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-box button:hover {
+    background: var(--gold-hover);
+    transform: translateY(-2px);
+}
+
+/* App Container */
+#app-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--bg-card);
+    border-right: 1px solid #222;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #222;
+}
+
+.rooms-list, .player-container {
+    padding: 20px;
+}
+
+.rooms-list h3, .player-container h3 {
+    font-size: 0.8rem;
+    color: var(--gold);
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+}
+
+.room-item {
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.room-item:hover {
+    background: #1e1e1e;
+    border-left-color: var(--red);
+}
+
+.room-item.active {
+    background: #252525;
+    border-left-color: var(--gold);
+    color: var(--gold);
+}
+
+.player-container {
+    margin-top: auto;
+    border-top: 1px solid #222;
+}
+
+#media-player audio {
+    width: 100%;
+    height: 35px;
+    filter: invert(100%);
+}
+
+.player-info {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Video Grid */
+.video-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+    padding: 20px;
+    overflow-y: auto;
+    background: #050505;
+}
+
+.video-wrapper {
+    position: relative;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+    border: 1px solid #222;
+}
+
+.video-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-label {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0,0,0,0.6);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    border-left: 2px solid var(--gold);
+}
+
+.video-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.video-controls button {
+    background: rgba(0,0,0,0.6);
+    border: 1px solid #444;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.video-controls button:hover {
+    background: var(--red);
+    border-color: var(--red);
+}
+
+/* Chat Area */
+.chat-area {
+    height: 250px;
+    background: var(--bg-card);
+    border-top: 1px solid #222;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-msg {
+    max-width: 80%;
+    margin-bottom: 5px;
+}
+
+.msg-header {
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.msg-header .user {
+    color: var(--gold);
+}
+
+.msg-header .time {
+    color: var(--text-muted);
+    font-weight: normal;
+    margin-left: 10px;
+}
+
+.msg-text {
+    background: #1e1e1e;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.system-msg {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin: 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.chat-input-container {
+    padding: 15px;
+    display: flex;
+    gap: 10px;
+    background: #0a0a0a;
+}
+
+#chat-input {
+    flex: 1;
+    background: #141414;
+    border: 1px solid #333;
+    padding: 12px;
+    color: white;
+    border-radius: 4px;
+    outline: none;
+}
+
+#chat-input:focus {
+    border-color: var(--gold);
+}
+
+#btn-send {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 0 25px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+#btn-send:hover {
+    background: var(--red-light);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gold);
+}

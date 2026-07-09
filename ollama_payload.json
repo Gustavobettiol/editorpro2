@@ -1,1 +1,0 @@
-{"model":"llama3:latest","messages":[{"role":"system","content":"Eres un asistente de programación experto, útil y amable. Responde en español."},{"role":"user","content":"Hola prueba directa"}],"stream":false}
