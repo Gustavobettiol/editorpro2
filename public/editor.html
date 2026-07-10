@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editor Pro 2 - VS Code Style</title>
+  <title>Nocturnal Pro Editor & Player</title>
+  <link rel="stylesheet" href="style.css">
   <style>
     :root {
       --bg-main: #1e1e1e;
@@ -861,8 +862,8 @@
   <!-- Title Bar -->
   <div class="titlebar">
     <div class="titlebar-left">
-      <div class="titlebar-icon">📝</div>
-      <span>Editor Pro 2</span>
+      <div class="titlebar-icon">🌙</div>
+      <span>Nocturnal Pro Editor & Player</span>
     </div>
     <div class="titlebar-menu">
       <div class="menu-item" onclick="showFolderModal()">📁 Abrir Carpeta</div>
@@ -1062,6 +1063,9 @@
       </div>
     </div>
   </div>
+
+    <!-- HLS.js for better streaming -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <!-- Monaco Editor -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>

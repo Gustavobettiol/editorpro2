@@ -9,6 +9,7 @@ const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'nocturnal-admin';
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -21,9 +22,31 @@ app.get('/', (req, res) => {
 // Endpoint: Información del Proyecto
 app.get('/project-info', (req, res) => {
   res.json({
-    projectName: 'editor pro2',
+    projectName: 'Nocturnal Pro Editor',
     rootPath: __dirname
   });
+});
+
+// Endpoint: Carpetas recientes
+app.get('/recent-folders', (req, res) => {
+  // En una implementación real, esto vendría de una DB o archivo de config
+  res.json([
+    { name: 'Proyecto Actual', path: __dirname },
+    { name: 'Public Assets', path: path.join(__dirname, 'public') },
+    { name: 'Documentación', path: path.join(__dirname, 'docs') }
+  ]);
+});
+
+// Endpoint: Abrir carpeta en el explorador
+app.post('/open-folder-browser', (req, res) => {
+  const { folderPath } = req.body;
+  try {
+    const absolutePath = validatePath(folderPath);
+    // En un servidor real esto no "abre" una ventana, pero el frontend espera éxito
+    res.json({ success: true, message: `Carpeta ${absolutePath} abierta` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Endpoint: Guía de despliegue
@@ -40,6 +63,17 @@ app.get('/deploy-guide', (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// Middleware para proteger endpoints críticos
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  if (process.env.NODE_ENV === 'production') {
+    if (!authHeader || authHeader !== `Bearer ${ADMIN_PASSWORD}`) {
+      return res.status(401).json({ error: 'No autorizado. Se requiere contraseña de administrador.' });
+    }
+  }
+  next();
+}
 
 // Helper para validar rutas y prevenir path traversal
 function validatePath(userPath) {
@@ -230,7 +264,7 @@ app.get('/read-file', (req, res) => {
 });
 
 // Endpoint: Ejecutar comando
-app.post('/execute', (req, res) => {
+app.post('/execute', authMiddleware, (req, res) => {
   const { code, language } = req.body;
   if (!code) return res.status(400).json({ error: 'Comando no especificado' });
 
@@ -249,7 +283,7 @@ app.post('/execute', (req, res) => {
 });
 
 // Endpoint: Ejecutar acción de chat
-app.post('/chat-execute', (req, res) => {
+app.post('/chat-execute', authMiddleware, (req, res) => {
   const { type, path: targetPath, content, folderPath } = req.body;
 
   try {

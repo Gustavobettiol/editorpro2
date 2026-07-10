@@ -517,14 +517,24 @@ function loadVideo() {
       videoId = url.split('/').pop();
     }
     display.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-  } else if (url.endsWith('.m3u8')) {
-    // Para HLS necesitamos una librería como hls.js, pero por ahora usamos el tag de video nativo que funciona en Safari/Chrome Android
-    display.innerHTML = `<video controls width="100%" height="100%" style="object-fit: contain;">
-      <source src="${url}" type="application/x-mpegURL">
-      Tu navegador no soporta HLS nativo.
-    </video>`;
+  } else if (url.includes('.m3u8')) {
+    display.innerHTML = `<video id="hlsVideo" controls width="100%" height="100%" style="object-fit: contain; background: #000;"></video>`;
+    const video = document.getElementById('hlsVideo');
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        video.play();
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = url;
+      video.addEventListener('loadedmetadata', function() {
+        video.play();
+      });
+    }
   } else {
-    display.innerHTML = `<video controls width="100%" height="100%" style="object-fit: contain;">
+    display.innerHTML = `<video controls width="100%" height="100%" style="object-fit: contain; background: #000;" autoplay>
       <source src="${url}">
       Tu navegador no soporta este formato de video.
     </video>`;
