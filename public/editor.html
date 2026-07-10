@@ -994,9 +994,20 @@
                 <div class="video-controls" style="display: flex; gap: 8px;">
                   <input type="text" id="videoUrlInput" placeholder="Pega el link de video o stream (m3u8, mp4, etc)..." style="flex: 1; padding: 6px; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); border-radius: 3px;">
                   <button onclick="loadVideo()" class="terminal-exec-btn">Cargar</button>
+                  <button onclick="shareVideo()" class="terminal-exec-btn" style="background: var(--success); color: #000;">📢 Compartir</button>
                 </div>
-                <div id="videoDisplay" style="flex: 1; background: #000; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <div style="display: flex; gap: 10px; flex: 1; min-height: 0;">
+                <div id="videoDisplay" style="flex: 2; background: #000; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                   <p id="videoPlaceholder" style="color: #444;">No hay video cargado</p>
+                </div>
+                <div id="publicFeed" style="flex: 1; background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden;">
+                  <div style="padding: 8px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; background: var(--bg-hover);">
+                    🌐 Feed Público
+                  </div>
+                  <div id="feedList" style="flex: 1; overflow-y: auto; padding: 4px;">
+                    <!-- Items del feed -->
+                  </div>
+                </div>
                 </div>
               </div>
             </div>
@@ -1032,8 +1043,31 @@
       <div class="statusbar-item" id="languageIndicator">
         JavaScript
       </div>
-      <div class="statusbar-item" style="margin-left: auto;">
+      <div class="statusbar-item" style="margin-left: auto;" onclick="showAdminModal()">
+        <span id="adminIndicator">🔒 Admin</span>
+      </div>
+      <div class="statusbar-item">
         <span id="sessionInfo">Sesión: ...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Admin Password -->
+  <div id="adminModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">🔒 Acceso de Administrador</div>
+      <div class="modal-body">
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+          Se requiere una contraseña para ejecutar comandos y modificar archivos en modo producción.
+        </p>
+        <div class="modal-input-group">
+          <label class="modal-label">Contraseña:</label>
+          <input class="modal-input" id="adminPasswordInput" type="password" placeholder="Ingresa la contraseña" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="closeAdminModal()">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" onclick="saveAdminPassword()">🔓 Autenticar</button>
       </div>
     </div>
   </div>

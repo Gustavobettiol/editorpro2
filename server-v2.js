@@ -137,12 +137,18 @@ app.get('/file-tree', (req, res) => {
 // --- CHAT IA & PERSISTENCIA ---
 
 const CHAT_DATA_DIR = path.join(__dirname, '.editor-data', 'chat-history');
-if (!fs.existsSync(CHAT_DATA_DIR)) {
-  fs.mkdirSync(CHAT_DATA_DIR, { recursive: true });
-}
+const FEED_DATA_DIR = path.join(__dirname, '.editor-data', 'public-feed');
+
+if (!fs.existsSync(CHAT_DATA_DIR)) fs.mkdirSync(CHAT_DATA_DIR, { recursive: true });
+if (!fs.existsSync(FEED_DATA_DIR)) fs.mkdirSync(FEED_DATA_DIR, { recursive: true });
+
+const FEED_FILE = path.join(FEED_DATA_DIR, 'feed.json');
+if (!fs.existsSync(FEED_FILE)) fs.writeFileSync(FEED_FILE, JSON.stringify([], null, 2));
 
 function getChatPath(sessionId) {
-  return path.join(CHAT_DATA_DIR, `${sessionId}.json`);
+  // Sanitize sessionId to prevent path traversal
+  const safeSessionId = String(sessionId).replace(/[^a-zA-Z0-9_-]/g, '');
+  return path.join(CHAT_DATA_DIR, `${safeSessionId}.json`);
 }
 
 function saveChatHistory(sessionId, history) {
@@ -247,6 +253,44 @@ app.post('/clear-chat-history', (req, res) => {
   if (!sessionId) return res.status(400).json({ error: 'Session ID requerido' });
   saveChatHistory(sessionId, []);
   res.json({ success: true });
+});
+
+// --- PUBLIC FEED ---
+
+// Endpoint: Obtener feed publico
+app.get('/public-feed', (req, res) => {
+  try {
+    const feed = JSON.parse(fs.readFileSync(FEED_FILE, 'utf8'));
+    res.json(feed);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint: Agregar al feed
+app.post('/public-feed', (req, res) => {
+  const { url, title } = req.body;
+  if (!url) return res.status(400).json({ error: 'URL requerida' });
+
+  try {
+    const feed = JSON.parse(fs.readFileSync(FEED_FILE, 'utf8'));
+    const newItem = {
+      id: Date.now(),
+      url,
+      title: title || url.split('/').pop() || 'Video sin título',
+      timestamp: new Date().toISOString()
+    };
+
+    // Evitar duplicados simples
+    if (!feed.some(item => item.url === url)) {
+      feed.unshift(newItem);
+      fs.writeFileSync(FEED_FILE, JSON.stringify(feed.slice(0, 50), null, 2)); // Guardar últimos 50
+    }
+
+    res.json({ success: true, item: newItem });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Endpoint: Leer archivo

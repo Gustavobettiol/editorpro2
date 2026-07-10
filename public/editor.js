@@ -13,7 +13,8 @@ let state = {
   chatProvider: 'lmstudio',
   chatModel: '',
   aiStatus: { lmstudio: false, ollama: false },
-  sessionId: localStorage.getItem('chatSessionId') || 'session-' + Date.now()
+  sessionId: localStorage.getItem('chatSessionId') || 'session-' + Date.now(),
+  adminPassword: localStorage.getItem('nocturnalAdminPassword') || ''
 };
 
 // Guardar sessionId en localStorage
@@ -26,7 +27,18 @@ let isResizing = false;
 let lastY = 0;
 
 async function fetchJsonOrThrow(url, options = {}) {
+  // Inject Authorization header if we have a password
+  if (state.adminPassword) {
+    if (!options.headers) options.headers = {};
+    options.headers['Authorization'] = `Bearer ${state.adminPassword}`;
+  }
+
   const response = await fetch(url, options);
+
+  if (response.status === 401) {
+    showAdminModal();
+  }
+
   const contentType = response.headers.get('content-type') || '';
   let payload = null;
   let rawText = '';
@@ -192,6 +204,9 @@ async function init() {
 
   // Cargar guía de despliegue
   await loadDeployGuide();
+
+  // Cargar feed publico
+  await fetchPublicFeed();
 
   // Verificar estado de IA
   await checkAIStatus();
@@ -411,8 +426,14 @@ function addChatMessage(text, role) {
   const messageDiv = document.createElement('div');
   messageDiv.className = `chat-message ${role}`;
 
-  // Procesar markdown simple
-  let html = text
+  // Basic escaping to prevent XSS while allowing simple formatting
+  const escapedText = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  // Procesar markdown simple seguro
+  let html = escapedText
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\n/g, '<br>');
@@ -500,6 +521,58 @@ async function loadDeployGuide() {
     container.innerHTML = `<div style="padding: 10px;">${html}</div>`;
   } catch (error) {
     container.innerHTML = `<p style="color: var(--error);">Error cargando guía: ${error.message}</p>`;
+  }
+}
+
+async function fetchPublicFeed() {
+  const feedList = document.getElementById('feedList');
+  try {
+    const feed = await fetchJsonOrThrow('/public-feed');
+    feedList.innerHTML = '';
+
+    if (feed.length === 0) {
+      feedList.innerHTML = '<p style="color: var(--text-muted); font-size: 10px; text-align: center; padding: 10px;">No hay videos compartidos</p>';
+      return;
+    }
+
+    feed.forEach(item => {
+      const div = document.createElement('div');
+      div.style.padding = '6px';
+      div.style.borderBottom = '1px solid var(--border)';
+      div.style.cursor = 'pointer';
+      div.style.fontSize = '11px';
+      div.className = 'tree-node-content';
+      div.innerHTML = `
+        <div style="font-weight: 500; color: var(--text-active); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">🎬 ${item.title}</div>
+        <div style="font-size: 9px; color: var(--text-muted);">${new Date(item.timestamp).toLocaleString()}</div>
+      `;
+      div.onclick = () => {
+        document.getElementById('videoUrlInput').value = item.url;
+        loadVideo();
+      };
+      feedList.appendChild(div);
+    });
+  } catch (error) {
+    console.error('Error cargando feed:', error);
+  }
+}
+
+async function shareVideo() {
+  const url = document.getElementById('videoUrlInput').value.trim();
+  if (!url) return;
+
+  const title = prompt('Título para este video:', url.split('/').pop());
+
+  try {
+    await fetchJsonOrThrow('/public-feed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, title })
+    });
+    alert('✅ Video compartido en el feed público');
+    await fetchPublicFeed();
+  } catch (error) {
+    alert(`❌ Error compartiendo: ${error.message}`);
   }
 }
 
@@ -940,6 +1013,39 @@ document.addEventListener('keydown', (e) => {
     closeFolderModal();
   }
 });
+
+// =========================================
+// Admin Modal
+// =========================================
+
+function showAdminModal() {
+  const modal = document.getElementById('adminModal');
+  modal.classList.add('show');
+  document.getElementById('adminPasswordInput').value = state.adminPassword;
+}
+
+function closeAdminModal() {
+  const modal = document.getElementById('adminModal');
+  modal.classList.remove('show');
+}
+
+function saveAdminPassword() {
+  const pass = document.getElementById('adminPasswordInput').value.trim();
+  state.adminPassword = pass;
+  localStorage.setItem('nocturnalAdminPassword', pass);
+
+  const indicator = document.getElementById('adminIndicator');
+  if (pass) {
+    indicator.textContent = '🔓 Admin';
+    indicator.style.color = '#fff';
+  } else {
+    indicator.textContent = '🔒 Admin';
+    indicator.style.color = 'rgba(255,255,255,0.5)';
+  }
+
+  closeAdminModal();
+  addTerminalLine('🔐 Contraseña de administrador actualizada', 'info');
+}
 
 // =========================================
 // Utilidades
