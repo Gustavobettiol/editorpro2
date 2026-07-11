@@ -1,5 +1,11 @@
 [
   {
+    "id": 1783746554050,
+    "url": "https://example.com/video.mp4",
+    "title": "<img src=x onerror=alert('XSS_FEED')> Safe Title",
+    "timestamp": "2026-07-11T05:09:14.050Z"
+  },
+  {
     "id": 1783718158694,
     "url": "https://www.w3schools.com/html/mov_bbb.mp4",
     "title": "Big Buck Bunny Test",

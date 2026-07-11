@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1783746006183,
+    "user": "TestUser",
+    "message": "Hello Global Chat!",
+    "timestamp": "2026-07-11T05:00:06.183Z"
+  },
+  {
+    "id": 1783746153144,
+    "user": "session-",
+    "message": "¡Hola a todos en el chat global!",
+    "timestamp": "2026-07-11T05:02:33.144Z"
+  },
+  {
+    "id": 1783746236889,
+    "user": "session-",
+    "message": "¡Hola a todos en el chat global!",
+    "timestamp": "2026-07-11T05:03:56.889Z"
+  },
+  {
+    "id": 1783746294279,
+    "user": "session-",
+    "message": "¡Hola a todos en el chat global!",
+    "timestamp": "2026-07-11T05:04:54.279Z"
+  },
+  {
+    "id": 1783746552989,
+    "user": "session-",
+    "message": "<img src=x onerror=alert('XSS_GLOBAL_CHAT')> <b>Bold</b>",
+    "timestamp": "2026-07-11T05:09:12.989Z"
+  },
+  {
+    "id": 1783746648796,
+    "user": "session-",
+    "message": "<img src=x onerror=alert('XSS_GLOBAL_CHAT')> <b>Bold</b>",
+    "timestamp": "2026-07-11T05:10:48.796Z"
+  }
+]

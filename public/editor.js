@@ -208,6 +208,13 @@ async function init() {
   // Cargar feed publico
   await fetchPublicFeed();
 
+  // Cargar chat global
+  await fetchGlobalChat();
+  setInterval(fetchGlobalChat, 5000); // Actualizar cada 5 seg
+
+  // Cargar blog
+  await fetchBlog();
+
   // Verificar estado de IA
   await checkAIStatus();
 
@@ -222,6 +229,13 @@ async function init() {
   document.getElementById('terminalInput').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       executeTerminalCommand();
+    }
+  });
+
+  // Listener Enter para Chat Global
+  document.getElementById('globalChatInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      sendGlobalChatMessage();
     }
   });
 
@@ -421,16 +435,23 @@ async function processChatActions(text) {
   }
 }
 
+function escapeHtml(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function addChatMessage(text, role) {
   const messagesDiv = document.getElementById('chatMessages');
   const messageDiv = document.createElement('div');
   messageDiv.className = `chat-message ${role}`;
 
   // Basic escaping to prevent XSS while allowing simple formatting
-  const escapedText = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  const escapedText = escapeHtml(text);
 
   // Procesar markdown simple seguro
   let html = escapedText
@@ -542,9 +563,13 @@ async function fetchPublicFeed() {
       div.style.cursor = 'pointer';
       div.style.fontSize = '11px';
       div.className = 'tree-node-content';
+
+      const safeTitle = escapeHtml(item.title);
+      const safeTimestamp = escapeHtml(new Date(item.timestamp).toLocaleString());
+
       div.innerHTML = `
-        <div style="font-weight: 500; color: var(--text-active); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">🎬 ${item.title}</div>
-        <div style="font-size: 9px; color: var(--text-muted);">${new Date(item.timestamp).toLocaleString()}</div>
+        <div style="font-weight: 500; color: var(--text-active); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">🎬 ${safeTitle}</div>
+        <div style="font-size: 9px; color: var(--text-muted);">${safeTimestamp}</div>
       `;
       div.onclick = () => {
         document.getElementById('videoUrlInput').value = item.url;
@@ -573,6 +598,94 @@ async function shareVideo() {
     await fetchPublicFeed();
   } catch (error) {
     alert(`❌ Error compartiendo: ${error.message}`);
+  }
+}
+
+// =========================================
+// Global Chat & Blog
+// =========================================
+
+async function fetchGlobalChat() {
+  const container = document.getElementById('globalChatMessages');
+  try {
+    const chat = await fetchJsonOrThrow('/global-chat');
+
+    // Solo actualizar si hay cambios
+    const currentMsgCount = container.children.length;
+    if (chat.length === currentMsgCount) return;
+
+    container.innerHTML = '';
+    chat.forEach(msg => {
+      const div = document.createElement('div');
+      div.style.padding = '2px 0';
+
+      const safeUser = escapeHtml(msg.user);
+      const safeMessage = escapeHtml(msg.message);
+
+      div.innerHTML = `
+        <span style="font-weight: 600; color: var(--accent);">${safeUser}:</span>
+        <span style="color: var(--text-main);">${safeMessage}</span>
+      `;
+      container.appendChild(div);
+    });
+    container.scrollTop = container.scrollHeight;
+  } catch (error) {
+    console.error('Error cargando chat global:', error);
+  }
+}
+
+async function sendGlobalChatMessage() {
+  const input = document.getElementById('globalChatInput');
+  const message = input.value.trim();
+  if (!message) return;
+
+  // Usar sessionId truncado como nombre de usuario por defecto
+  const user = state.sessionId.slice(0, 8);
+
+  try {
+    await fetchJsonOrThrow('/global-chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user, message })
+    });
+    input.value = '';
+    await fetchGlobalChat();
+  } catch (error) {
+    console.error('Error enviando mensaje global:', error);
+  }
+}
+
+async function fetchBlog() {
+  const container = document.getElementById('blogPosts');
+  try {
+    const blog = await fetchJsonOrThrow('/blog');
+    container.innerHTML = '';
+
+    blog.forEach(post => {
+      const article = document.createElement('article');
+      article.style.padding = '20px';
+      article.style.borderBottom = '1px solid var(--border)';
+      article.style.marginBottom = '20px';
+
+      const safeTitle = escapeHtml(post.title);
+      const safeAuthor = escapeHtml(post.author);
+      const safeDate = escapeHtml(new Date(post.date).toLocaleDateString());
+      const safeContent = escapeHtml(post.content).replace(/\n/g, '<br>');
+
+      article.innerHTML = `
+        <h3 style="color: var(--text-active); margin-top: 0;">${safeTitle}</h3>
+        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+          Por <strong>${safeAuthor}</strong> | ${safeDate}
+        </div>
+        <div style="font-size: 14px; line-height: 1.6; color: var(--text-main);">
+          ${safeContent}
+        </div>
+      `;
+      container.appendChild(article);
+    });
+  } catch (error) {
+    console.error('Error cargando blog:', error);
+    container.innerHTML = '<p>Error cargando el blog.</p>';
   }
 }
 

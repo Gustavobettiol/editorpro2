@@ -961,6 +961,9 @@
               <div class="bottom-tab" data-panel="video" onclick="switchPanel('video')">
                 🎬 Nocturnal Player
               </div>
+              <div class="bottom-tab" data-panel="blog" onclick="switchPanel('blog')">
+                📝 Blog
+              </div>
             </div>
 
             <div id="terminal" class="panel-content active">
@@ -997,17 +1000,41 @@
                   <button onclick="shareVideo()" class="terminal-exec-btn" style="background: var(--success); color: #000;">📢 Compartir</button>
                 </div>
                 <div style="display: flex; gap: 10px; flex: 1; min-height: 0;">
-                <div id="videoDisplay" style="flex: 2; background: #000; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                  <p id="videoPlaceholder" style="color: #444;">No hay video cargado</p>
-                </div>
-                <div id="publicFeed" style="flex: 1; background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden;">
-                  <div style="padding: 8px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; background: var(--bg-hover);">
-                    🌐 Feed Público
+                  <div id="videoDisplay" style="flex: 2; background: #000; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    <p id="videoPlaceholder" style="color: #444;">No hay video cargado</p>
                   </div>
-                  <div id="feedList" style="flex: 1; overflow-y: auto; padding: 4px;">
-                    <!-- Items del feed -->
+                  <div style="flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 250px;">
+                    <div id="publicFeed" style="flex: 1; background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden;">
+                      <div style="padding: 8px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; background: var(--bg-hover);">
+                        🌐 Feed Público
+                      </div>
+                      <div id="feedList" style="flex: 1; overflow-y: auto; padding: 4px;">
+                        <!-- Items del feed -->
+                      </div>
+                    </div>
+                    <div id="globalChat" style="flex: 1.5; background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden;">
+                      <div style="padding: 8px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; background: var(--bg-hover); display: flex; justify-content: space-between;">
+                        <span>💬 Chat Global (En Vivo)</span>
+                        <span style="font-size: 9px; color: var(--success);">● popular</span>
+                      </div>
+                      <div id="globalChatMessages" style="flex: 1; overflow-y: auto; padding: 8px; font-size: 11px; display: flex; flex-direction: column; gap: 4px;">
+                        <!-- Mensajes de chat global -->
+                      </div>
+                      <div style="padding: 6px; border-top: 1px solid var(--border); display: flex; gap: 4px;">
+                        <input type="text" id="globalChatInput" placeholder="Comenta algo..." style="flex: 1; font-size: 11px; padding: 4px; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); border-radius: 3px;">
+                        <button onclick="sendGlobalChatMessage()" style="padding: 4px 8px; background: var(--accent); color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">Enviar</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div id="blog" class="panel-content">
+              <div id="blogContent" style="max-width: 800px; margin: 0 auto; width: 100%;">
+                <h2 style="border-bottom: 1px solid var(--border); padding-bottom: 10px;">Comunidad Nocturnal Pro - Blog</h2>
+                <div id="blogPosts">
+                  <!-- Posts del blog -->
                 </div>
               </div>
             </div>

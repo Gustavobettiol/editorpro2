@@ -138,12 +138,45 @@ app.get('/file-tree', (req, res) => {
 
 const CHAT_DATA_DIR = path.join(__dirname, '.editor-data', 'chat-history');
 const FEED_DATA_DIR = path.join(__dirname, '.editor-data', 'public-feed');
+const GLOBAL_DATA_DIR = path.join(__dirname, '.editor-data', 'global');
 
 if (!fs.existsSync(CHAT_DATA_DIR)) fs.mkdirSync(CHAT_DATA_DIR, { recursive: true });
 if (!fs.existsSync(FEED_DATA_DIR)) fs.mkdirSync(FEED_DATA_DIR, { recursive: true });
+if (!fs.existsSync(GLOBAL_DATA_DIR)) fs.mkdirSync(GLOBAL_DATA_DIR, { recursive: true });
 
 const FEED_FILE = path.join(FEED_DATA_DIR, 'feed.json');
 if (!fs.existsSync(FEED_FILE)) fs.writeFileSync(FEED_FILE, JSON.stringify([], null, 2));
+
+const GLOBAL_CHAT_FILE = path.join(GLOBAL_DATA_DIR, 'chat.json');
+if (!fs.existsSync(GLOBAL_CHAT_FILE)) fs.writeFileSync(GLOBAL_CHAT_FILE, JSON.stringify([], null, 2));
+
+const BLOG_FILE = path.join(GLOBAL_DATA_DIR, 'blog.json');
+if (!fs.existsSync(BLOG_FILE)) {
+  const initialBlog = [
+    {
+      id: 1,
+      title: "Bienvenido a Nocturnal Pro",
+      content: "Estamos emocionados de lanzar esta nueva versión con reproductor de video y chat global.",
+      author: "Admin",
+      date: new Date().toISOString()
+    },
+    {
+      id: 2,
+      title: "Novedades en el Reproductor",
+      content: "Ahora soportamos HLS (.m3u8) para transmisiones en vivo de alta calidad. ¡Pruébalo en la pestaña Nocturnal Player!",
+      author: "Nocturnal Dev",
+      date: new Date().toISOString()
+    },
+    {
+      id: 3,
+      title: "Comunidad y Chat Global",
+      content: "Interactúa con otros usuarios en tiempo real. No se requiere registro ni invitación. ¡Únete a la conversación!",
+      author: "Comunidad",
+      date: new Date().toISOString()
+    }
+  ];
+  fs.writeFileSync(BLOG_FILE, JSON.stringify(initialBlog, null, 2));
+}
 
 function getChatPath(sessionId) {
   // Sanitize sessionId to prevent path traversal
@@ -253,6 +286,53 @@ app.post('/clear-chat-history', (req, res) => {
   if (!sessionId) return res.status(400).json({ error: 'Session ID requerido' });
   saveChatHistory(sessionId, []);
   res.json({ success: true });
+});
+
+// --- GLOBAL CHAT & BLOG ---
+
+// Endpoint: Obtener chat global
+app.get('/global-chat', (req, res) => {
+  try {
+    const chat = JSON.parse(fs.readFileSync(GLOBAL_CHAT_FILE, 'utf8'));
+    res.json(chat);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint: Enviar mensaje al chat global
+app.post('/global-chat', (req, res) => {
+  const { user, message } = req.body;
+  if (!message) return res.status(400).json({ error: 'Mensaje requerido' });
+
+  try {
+    const chat = JSON.parse(fs.readFileSync(GLOBAL_CHAT_FILE, 'utf8'));
+    const newMessage = {
+      id: Date.now(),
+      user: user || 'Anónimo',
+      message,
+      timestamp: new Date().toISOString()
+    };
+
+    chat.push(newMessage);
+    // Mantener solo los últimos 100 mensajes
+    const trimmedChat = chat.slice(-100);
+    fs.writeFileSync(GLOBAL_CHAT_FILE, JSON.stringify(trimmedChat, null, 2));
+
+    res.json({ success: true, message: newMessage });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint: Obtener blog
+app.get('/blog', (req, res) => {
+  try {
+    const blog = JSON.parse(fs.readFileSync(BLOG_FILE, 'utf8'));
+    res.json(blog);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // --- PUBLIC FEED ---
